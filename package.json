@@ -1,0 +1,56 @@
+{
+  "name": "pi-openai-responses-codex",
+  "version": "0.1.0",
+  "description": "Standalone pi extension package that clones pi's built-in openai-responses transport into a self-contained, modifiable, publishable provider.",
+  "author": "rao",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-coding-agent",
+    "provider",
+    "openai",
+    "responses",
+    "codex"
+  ],
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "pi": {
+    "extensions": [
+      "./src/index.js"
+    ]
+  },
+  "scripts": {
+    "check:syntax": "node --check src/index.js && node --check src/transport/openai-responses.js && node --check src/transport/openai-responses-shared.js && node --check src/transport/simple-options.js && node --check src/transport/transform-messages.js && node --check src/utils/error-body.js && node --check src/utils/estimate.js",
+    "pack:check": "npm pack --dry-run",
+    "prepublishOnly": "npm run check:syntax && npm run pack:check"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "dependencies": {
+    "openai": "^6.26.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "^0.80.3",
+    "@earendil-works/pi-coding-agent": "^0.80.3"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-ai": {
+      "optional": true
+    },
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@earendil-works/pi-ai": "^0.80.3",
+    "@earendil-works/pi-coding-agent": "^0.80.3"
+  }
+}
