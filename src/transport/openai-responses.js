@@ -3,6 +3,7 @@ import { clampThinkingLevel, AssistantMessageEventStream } from "@earendil-works
 import { formatProviderError, normalizeProviderError } from "../utils/error-body.js";
 import { headersToRecord } from "../utils/headers.js";
 import { getProviderEnvValue } from "../utils/provider-env.js";
+import { sanitizeSurrogates } from "../utils/sanitize-unicode.js";
 import { buildCopilotDynamicHeaders, hasCopilotVisionInput } from "./github-copilot-headers.js";
 import { clampOpenAIPromptCacheKey } from "./openai-prompt-cache.js";
 import { convertResponsesMessages, convertResponsesTools, processResponsesStream } from "./openai-responses-shared.js";
@@ -160,11 +161,13 @@ function createClient(model, context, apiKey, optionsHeaders, sessionId) {
     });
 }
 function buildParams(model, context, options) {
-    const messages = convertResponsesMessages(model, context, OPENAI_TOOL_CALL_PROVIDERS);
+    const messages = convertResponsesMessages(model, context, OPENAI_TOOL_CALL_PROVIDERS, { includeSystemPrompt: false });
+    const instructions = context.systemPrompt ? sanitizeSurrogates(context.systemPrompt) : undefined;
     const cacheRetention = resolveCacheRetention(options?.cacheRetention, options?.env);
     const compat = getCompat(model);
     const params = {
         model: model.id,
+        ...(instructions ? { instructions } : {}),
         input: messages,
         stream: true,
         prompt_cache_key: cacheRetention === "none" ? undefined : clampOpenAIPromptCacheKey(options?.sessionId),
